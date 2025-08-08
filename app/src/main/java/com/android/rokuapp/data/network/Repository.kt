@@ -6,7 +6,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
-class Repository {
+object Repository {
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -18,11 +18,5 @@ class Repository {
             .create(ApiService::class.java)
     }
 
-    suspend fun getApps(): List<App> {
-        return try {
-            apiService.getApps().apps
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
+    suspend fun getApps(): List<App> = apiService.getApps().apps
 }
