@@ -4,154 +4,111 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.android.rokuapp.data.model.App
-import com.android.rokuapp.viewmodel.AppViewModel
 import com.android.rokuapp.ui.theme.RokuAppTheme
+import com.android.rokuapp.view.AppItem
+import com.android.rokuapp.view.AppUIScreen
+import com.android.rokuapp.viewmodel.AppViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val viewModel: AppViewModel = viewModel()
             RokuAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppScreen(modifier = Modifier.padding(innerPadding))
+
+                    // Main screen with scaffold handle errors
+                    AppUIScreen(modifier = Modifier.padding(innerPadding))
+
+                    // Basic view tutorial
+                    //MainScreen2(viewModel, modifier = Modifier.padding(innerPadding))
+
+                    // MainScreen with out scaffold
+                    // MainScreen() // comment out scaffold
                 }
             }
         }
     }
 }
 
+/**
+ *  View of the app without scaffold
+ */
 @Composable
-fun AppScreen(
-    modifier: Modifier = Modifier,
-    viewModel: AppViewModel = viewModel()
-) {
+fun MainScreen(viewModel: AppViewModel = viewModel()) {
+
     val state by viewModel.state.collectAsState()
-    
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Roku Apps",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        
-        when {
-            state.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text("Loading apps...")
-                    }
-                }
-            }
 
-            state.error != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Error: ${state.error}",
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { viewModel.loadApps() }) {
-                            Text("Retry")
-                        }
-                    }
-                }
-            }
-
-            state.apps.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("No apps found")
-                }
-            }
-            
-            else -> {
-                AppList(apps = state.apps)
-            }
-        }
-    }
-}
-
-@Composable
-fun AppList(apps: List<App>) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 20.dp)
     ) {
-        items(apps) { app ->
+        items(state.apps) { app ->
             AppItem(app = app)
         }
     }
 }
 
+/**
+ * Basic view of the app
+ */
 @Composable
-fun AppItem(app: App) {
-    Card(
+fun MainScreen2(viewModel: AppViewModel, modifier: Modifier) {
+
+    val state by viewModel.state.collectAsState()
+
+    LazyColumn(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp),
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .fillMaxSize()
+            .padding(top = 20.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = app.name,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "ID: ${app.id}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            AsyncImage(
-                model = "https://rokumobileinterview.s3.us-west-2.amazonaws.com/"+app.imageUrl,
-                contentDescription = app.name,
-                modifier = Modifier.size(128.dp)
-            )
+        items(state.apps) { app ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = app.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "ID: ${app.id}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                AsyncImage(
+                    model = "https://rokumobileinterview.s3.us-west-2.amazonaws.com/" + app.imageUrl,
+                    contentDescription = app.name,
+                    modifier = Modifier.size(128.dp)
+                )
+            }
         }
     }
 }
@@ -174,6 +131,6 @@ fun AppItemPreview() {
 @Composable
 fun AppScreenPreview() {
     RokuAppTheme {
-        AppScreen()
+        AppUIScreen()
     }
 }
