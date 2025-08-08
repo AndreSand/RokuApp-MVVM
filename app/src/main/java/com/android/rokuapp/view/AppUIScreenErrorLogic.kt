@@ -82,7 +82,7 @@ fun AppUIScreenErrorLogic(
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { viewModel.loadApps() }) {
+                        Button(onClick = { viewModel.fetchApps() }) {
                             Text("Retry")
                         }
                     }
