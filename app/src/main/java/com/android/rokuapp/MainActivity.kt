@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.android.rokuapp.data.model.App
 import com.android.rokuapp.viewmodel.AppViewModel
 import com.android.rokuapp.ui.theme.RokuAppTheme
@@ -146,10 +147,10 @@ fun AppItem(app: App) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Text(
-                text = "Image: ${app.imageUrl}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            AsyncImage(
+                model = "https://rokumobileinterview.s3.us-west-2.amazonaws.com/"+app.imageUrl,
+                contentDescription = app.name,
+                modifier = Modifier.size(128.dp)
             )
         }
     }
@@ -163,7 +164,7 @@ fun AppItemPreview() {
             app = App(
                 id = "12",
                 name = "Netflix",
-                imageUrl = "12.jpeg"
+                imageUrl = "https://rokumobileinterview.s3.us-west-2.amazonaws.com/12.jpg"
             )
         )
     }
