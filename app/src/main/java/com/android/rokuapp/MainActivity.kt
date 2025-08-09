@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.android.rokuapp.data.model.App
+import com.android.rokuapp.data.network.ApiService.Companion.BASE_URL
 import com.android.rokuapp.ui.theme.RokuAppTheme
 import com.android.rokuapp.view.AppItem
 import com.android.rokuapp.view.AppUIScreen
@@ -104,7 +105,7 @@ fun MainScreen2(viewModel: AppViewModel, modifier: Modifier) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 AsyncImage(
-                    model = "https://rokumobileinterview.s3.us-west-2.amazonaws.com/" + app.imageUrl,
+                    model = BASE_URL + app.imageUrl,
                     contentDescription = app.name,
                     modifier = Modifier.size(128.dp)
                 )
@@ -121,7 +122,7 @@ fun AppItemPreview() {
             app = App(
                 id = "12",
                 name = "Netflix",
-                imageUrl = "https://rokumobileinterview.s3.us-west-2.amazonaws.com/12.jpg"
+                imageUrl = BASE_URL + "12.jpg"
             )
         )
     }

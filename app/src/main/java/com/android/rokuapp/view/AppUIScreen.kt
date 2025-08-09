@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.android.rokuapp.data.model.App
+import com.android.rokuapp.data.network.ApiService.Companion.BASE_URL
 import com.android.rokuapp.viewmodel.AppViewModel
 
 @Composable
@@ -117,7 +118,7 @@ fun AppItem(app: App) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             AsyncImage(
-                model = "https://rokumobileinterview.s3.us-west-2.amazonaws.com/"+app.imageUrl,
+                model = BASE_URL + app.imageUrl,
                 contentDescription = app.name,
                 modifier = Modifier.size(128.dp)
             )
