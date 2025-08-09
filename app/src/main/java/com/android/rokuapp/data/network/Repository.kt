@@ -1,6 +1,7 @@
 package com.android.rokuapp.data.network
 
 import com.android.rokuapp.data.model.App
+import com.android.rokuapp.data.network.ApiService.Companion.BASE_URL
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -12,7 +13,7 @@ object Repository {
 
     private val apiService: ApiService by lazy {
         Retrofit.Builder()
-            .baseUrl("https://rokumobileinterview.s3.us-west-2.amazonaws.com/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
             .create(ApiService::class.java)

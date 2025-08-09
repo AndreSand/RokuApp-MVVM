@@ -8,6 +8,10 @@ import retrofit2.http.GET
 interface ApiService {
     @GET("apps.json")
     suspend fun getApps(): ApiResponse
+
+    companion object {
+        const val BASE_URL = "https://rokumobileinterview.s3.us-west-2.amazonaws.com/"
+    }
 }
 
 @Serializable
