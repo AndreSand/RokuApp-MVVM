@@ -35,13 +35,14 @@ import com.android.rokuapp.ui.theme.RokuAppTheme
 import com.android.rokuapp.view.AppItem
 import com.android.rokuapp.view.AppUIScreen
 import com.android.rokuapp.viewmodel.AppViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val viewModel: AppViewModel = viewModel()
+            val viewModel: AppViewModel = koinViewModel()
             RokuAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
@@ -63,7 +64,7 @@ class MainActivity : ComponentActivity() {
  *  View of the app without scaffold
  */
 @Composable
-fun MainScreen(viewModel: AppViewModel = viewModel()) {
+fun MainScreen(viewModel: AppViewModel = koinViewModel()) {
 
     val state by viewModel.state.collectAsState()
 

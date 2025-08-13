@@ -70,7 +70,13 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 
+    // Koin for Dependency Injection
+    implementation("io.insert-koin:koin-android:4.0.2")
+    implementation("io.insert-koin:koin-androidx-compose:4.0.2")
+    implementation("io.insert-koin:koin-core:4.0.2")
+
     testImplementation(libs.junit)
+    testImplementation("io.insert-koin:koin-test-junit4:4.0.2")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
