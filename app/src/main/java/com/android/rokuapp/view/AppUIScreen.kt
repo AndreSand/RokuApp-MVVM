@@ -30,11 +30,12 @@ import coil3.compose.AsyncImage
 import com.android.rokuapp.data.model.App
 import com.android.rokuapp.data.network.ApiService.BASE_URL
 import com.android.rokuapp.viewmodel.AppViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AppUIScreen(
     modifier: Modifier = Modifier,
-    viewModel: AppViewModel = viewModel()
+    viewModel: AppViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
