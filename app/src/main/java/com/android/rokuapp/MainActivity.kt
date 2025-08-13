@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,10 +46,10 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
                     // Main screen with scaffold handle errors
-                    AppUIScreen(modifier = Modifier.padding(innerPadding))
+                    //AppUIScreen(modifier = Modifier.padding(innerPadding))
 
                     // Basic view tutorial
-                    //MainScreen2(viewModel, modifier = Modifier.padding(innerPadding))
+                    MainScreen2(viewModel, modifier = Modifier.padding(innerPadding))
 
                     // MainScreen with out scaffold
                     // MainScreen() // comment out scaffold
@@ -85,30 +89,39 @@ fun MainScreen2(viewModel: AppViewModel, modifier: Modifier) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 20.dp)
+            .padding(top = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(state.apps) { app ->
-            Column(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 4.dp),
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Text(
-                    text = app.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "ID: ${app.id}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                AsyncImage(
-                    model = BASE_URL + app.imageUrl,
-                    contentDescription = app.name,
-                    modifier = Modifier.size(128.dp)
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = app.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "ID: ${app.id}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    AsyncImage(
+                        model = BASE_URL + app.imageUrl,
+                        contentDescription = app.name,
+                        modifier = Modifier.size(128.dp)
+                    )
+                }
             }
         }
     }
