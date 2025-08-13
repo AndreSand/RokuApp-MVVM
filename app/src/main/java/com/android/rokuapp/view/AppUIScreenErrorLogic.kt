@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.android.rokuapp.data.model.App
+import com.android.rokuapp.ui.utils.ApiResponse
 import com.android.rokuapp.viewmodel.AppViewModel
 
 @Composable
@@ -50,8 +51,8 @@ fun AppUIScreenErrorLogic(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        when {
-            state.isLoading -> {
+        when (val currentState = state) {
+            is ApiResponse.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -67,7 +68,7 @@ fun AppUIScreenErrorLogic(
                 }
             }
 
-            state.error != null -> {
+            is ApiResponse.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -77,7 +78,7 @@ fun AppUIScreenErrorLogic(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Error: ${state.error}",
+                            text = "Error: ${currentState.message}",
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center
                         )
@@ -89,17 +90,17 @@ fun AppUIScreenErrorLogic(
                 }
             }
 
-            state.apps.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("No apps found")
+            is ApiResponse.Success -> {
+                if (currentState.data.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("No apps found")
+                    }
+                } else {
+                    AppList1(apps = currentState.data)
                 }
-            }
-
-            else -> {
-                AppList1(apps = state.apps)
             }
         }
     }
