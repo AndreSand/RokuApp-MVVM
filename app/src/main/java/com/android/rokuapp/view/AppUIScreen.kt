@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.android.rokuapp.data.model.App
-import com.android.rokuapp.data.network.ApiService.Companion.BASE_URL
+import com.android.rokuapp.data.network.ApiService.BASE_URL
 import com.android.rokuapp.viewmodel.AppViewModel
 
 @Composable

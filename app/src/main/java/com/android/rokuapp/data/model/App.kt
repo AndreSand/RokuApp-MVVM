@@ -12,3 +12,9 @@ data class App(
     @SerialName("name")
     val name: String
 )
+
+@Serializable
+data class ApiResponse(
+    @SerialName("apps")
+    val apps: List<App> = emptyList()
+)
