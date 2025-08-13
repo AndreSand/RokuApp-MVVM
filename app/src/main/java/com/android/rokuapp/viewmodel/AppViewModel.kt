@@ -2,7 +2,7 @@ package com.android.rokuapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.rokuapp.data.network.Repository
+import com.android.rokuapp.data.repository.Repository
 import com.android.rokuapp.data.model.App
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +27,7 @@ class AppViewModel : ViewModel() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
-                val apps = Repository.getApps()
+                val apps = Repository().getApps()
                 _state.value = _state.value.copy(
                     apps = apps,
                     isLoading = false
