@@ -56,6 +56,67 @@ graph TD
 
 ```
 
+## Unit Tests
+
+This project includes comprehensive unit tests following Android testing best practices. The tests cover all layers of the MVVM architecture and ensure code reliability and maintainability.
+
+### Test Coverage
+
+**Unit Tests Created:**
+* **📱 AppTest.kt** - Model serialization/deserialization tests
+* **🗂️ RepositoryTest.kt** - Repository layer tests with mocked API
+* **🧠 AppViewModelTest.kt** - ViewModel business logic and state management tests
+* **🌐 ApiServiceTest.kt** - Network layer tests with MockWebServer
+* **📊 AppStateTest.kt** - State data class functionality tests
+* **⚙️ ProjectSetupTest.kt** - Basic project setup verification
+
+### Testing Libraries Used
+
+- **JUnit 4** - Core testing framework
+- **MockK** - Kotlin mocking library for unit tests
+- **Coroutines Test** - Testing utilities for Kotlin coroutines
+- **Turbine** - Testing library for Kotlin Flows
+- **MockWebServer** - Mock HTTP server for API testing
+- **AndroidX Test Core** - Android testing utilities
+
+### Running Tests
+
+```bash
+# Run all unit tests
+./gradlew test
+
+# Run tests for debug variant only
+./gradlew testDebugUnitTest
+
+# Run tests with detailed output
+./gradlew test --info
+
+# Run tests with coverage report
+./run_tests.sh --coverage
+
+# Run specific test class
+./gradlew test --tests "com.android.rokuapp.viewmodel.AppViewModelTest"
+
+# Clean and run tests
+./gradlew clean test
+```
+
+### Test Reports
+
+After running tests, you can find detailed reports at:
+- **Test Results:** `app/build/reports/tests/testDebugUnitTest/index.html`
+- **Coverage Report:** `app/build/reports/coverage/test/debug/index.html`
+
+### Key Testing Features
+
+- ✅ **Dependency Injection** - Tests use proper mocking with injected dependencies
+- ✅ **Coroutine Testing** - Proper handling of async operations with TestDispatcher
+- ✅ **Flow Testing** - StateFlow testing with Turbine for reactive streams
+- ✅ **Network Testing** - Mock API responses with MockWebServer
+- ✅ **Error Handling** - Comprehensive error scenario testing
+- ✅ **State Management** - UI state transitions and loading states
+- ✅ **Data Validation** - JSON serialization and model validation
+
 ## How to Build and Run
 
 1.  Clone the repository:
