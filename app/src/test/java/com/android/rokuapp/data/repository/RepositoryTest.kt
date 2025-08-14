@@ -19,9 +19,7 @@ class RepositoryTest {
     @Before
     fun setup() {
         mockApi = mockk()
-        repository = Repository()
-        // Note: In a real implementation, you'd want to inject the API dependency
-        // For now, we'll test the current implementation structure
+        repository = Repository(mockApi)
     }
 
     @Test
@@ -40,6 +38,7 @@ class RepositoryTest {
 
         // Then
         assertEquals(expectedApps, result)
+        coVerify { mockApi.getApps() }
     }
 
     @Test(expected = Exception::class)
@@ -64,5 +63,53 @@ class RepositoryTest {
 
         // Then
         assertEquals(emptyList<App>(), result)
+        coVerify { mockApi.getApps() }
+    }
+
+    @Test
+    fun `getApps calls API exactly once`() = runTest {
+        // Given
+        val apiResponse = ApiResponse(apps = emptyList())
+        coEvery { mockApi.getApps() } returns apiResponse
+
+        // When
+        repository.getApps()
+
+        // Then
+        coVerify(exactly = 1) { mockApi.getApps() }
+    }
+
+    @Test
+    fun `getApps extracts apps from ApiResponse correctly`() = runTest {
+        // Given
+        val app1 = App(id = "31012", name = "Fandango Now", imageUrl = "31012.jpeg")
+        val app2 = App(id = "12", name = "Netflix", imageUrl = "12.jpeg")
+        val apiResponse = ApiResponse(apps = listOf(app1, app2))
+        
+        coEvery { mockApi.getApps() } returns apiResponse
+
+        // When
+        val result = repository.getApps()
+
+        // Then
+        assertEquals(2, result.size)
+        assertEquals(app1, result[0])
+        assertEquals(app2, result[1])
+    }
+
+    @Test
+    fun `getApps handles single app in response`() = runTest {
+        // Given
+        val singleApp = App(id = "12", name = "Netflix", imageUrl = "12.jpeg")
+        val apiResponse = ApiResponse(apps = listOf(singleApp))
+        
+        coEvery { mockApi.getApps() } returns apiResponse
+
+        // When
+        val result = repository.getApps()
+
+        // Then
+        assertEquals(1, result.size)
+        assertEquals(singleApp, result[0])
     }
 }

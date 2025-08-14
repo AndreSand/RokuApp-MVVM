@@ -6,8 +6,8 @@ import com.android.rokuapp.data.network.RockuApi
 
 //suspend fun getApps(): List<App> = apiService.getApps().apps
 
-class Repository {
+class Repository(private val api: RockuApi = ApiService.api) {
     suspend fun getApps(): List<App> {
-        return ApiService.api.getApps().apps
+        return api.getApps().apps
     }
 }

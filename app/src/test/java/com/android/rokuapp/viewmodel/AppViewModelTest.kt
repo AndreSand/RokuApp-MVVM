@@ -37,11 +37,6 @@ class AppViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         mockRepository = mockk()
-        
-        // Setup default behavior to prevent init block from failing
-        coEvery { mockRepository.getApps() } returns emptyList()
-        
-        viewModel = AppViewModel()
     }
 
     @After
@@ -51,15 +46,18 @@ class AppViewModelTest {
 
     @Test
     fun `initial state should have empty apps list and not loading`() = runTest {
-        // Given - ViewModel is initialized
+        // Given
+        coEvery { mockRepository.getApps() } returns emptyList()
         
-        // When - Checking initial state
-        val initialState = viewModel.state.value
+        // When
+        viewModel = AppViewModel(mockRepository)
+        advanceUntilIdle()
         
         // Then
-        assertTrue(initialState.apps.isEmpty())
-        assertFalse(initialState.isLoading)
-        assertNull(initialState.error)
+        val finalState = viewModel.state.value
+        assertTrue(finalState.apps.isEmpty())
+        assertFalse(finalState.isLoading)
+        assertNull(finalState.error)
     }
 
     @Test
@@ -72,15 +70,16 @@ class AppViewModelTest {
         coEvery { mockRepository.getApps() } returns expectedApps
 
         // When
+        viewModel = AppViewModel(mockRepository)
+        
         viewModel.state.test {
-            // Skip initial emissions from init
-            skipItems(2) // Skip initial state and loading state
-            
-            viewModel.fetchApps()
+            // Wait for initial loading and then final state
             advanceUntilIdle()
-
+            
+            // Skip any initial emissions and get the final state
+            val finalState = expectMostRecentItem()
+            
             // Then
-            val finalState = awaitItem()
             assertEquals(expectedApps, finalState.apps)
             assertFalse(finalState.isLoading)
             assertNull(finalState.error)
@@ -92,21 +91,24 @@ class AppViewModelTest {
         // Given
         coEvery { mockRepository.getApps() } returns emptyList()
 
-        // When/Then
+        // When
+        viewModel = AppViewModel(mockRepository)
+        
         viewModel.state.test {
-            // Skip initial state
-            awaitItem()
+            // Initial state
+            val initialState = awaitItem()
+            assertTrue(initialState.apps.isEmpty())
+            assertFalse(initialState.isLoading)
+            assertNull(initialState.error)
             
-            viewModel.fetchApps()
-            
-            // Should set loading to true
+            // Loading state
             val loadingState = awaitItem()
             assertTrue(loadingState.isLoading)
             assertNull(loadingState.error)
             
             advanceUntilIdle()
             
-            // Should set loading to false when done
+            // Final state
             val finalState = awaitItem()
             assertFalse(finalState.isLoading)
         }
@@ -118,14 +120,19 @@ class AppViewModelTest {
         val errorMessage = "Network error"
         coEvery { mockRepository.getApps() } throws Exception(errorMessage)
 
-        // When/Then
+        // When
+        viewModel = AppViewModel(mockRepository)
+        
         viewModel.state.test {
-            // Skip initial emissions
-            skipItems(2)
+            // Initial state
+            awaitItem()
             
-            viewModel.fetchApps()
+            // Loading state
+            awaitItem()
+            
             advanceUntilIdle()
-
+            
+            // Error state
             val errorState = awaitItem()
             assertFalse(errorState.isLoading)
             assertEquals(errorMessage, errorState.error)
@@ -135,25 +142,33 @@ class AppViewModelTest {
 
     @Test
     fun `fetchApps should clear previous error when called again`() = runTest {
-        // Given - First call fails
+        // Given - Repository will fail first, then succeed
         coEvery { mockRepository.getApps() } throws Exception("Network error")
         
+        viewModel = AppViewModel(mockRepository)
+        
         viewModel.state.test {
-            skipItems(2)
-            viewModel.fetchApps()
+            // Wait for initial error state
+            awaitItem() // initial
+            awaitItem() // loading
             advanceUntilIdle()
-            
-            val errorState = awaitItem()
+            val errorState = awaitItem() // error
             assertEquals("Network error", errorState.error)
             
-            // When - Second call succeeds
+            // When - Repository now succeeds
             val apps = listOf(App(id = "1", name = "Netflix", imageUrl = "netflix.jpg"))
             coEvery { mockRepository.getApps() } returns apps
             
             viewModel.fetchApps()
+            
+            // Loading state for retry
+            val retryLoadingState = awaitItem()
+            assertTrue(retryLoadingState.isLoading)
+            assertNull(retryLoadingState.error) // Error should be cleared
+            
             advanceUntilIdle()
             
-            // Then - Error should be cleared
+            // Success state
             val successState = awaitItem()
             assertNull(successState.error)
             assertEquals(apps, successState.apps)
@@ -167,10 +182,33 @@ class AppViewModelTest {
         coEvery { mockRepository.getApps() } returns emptyList()
 
         // When
-        viewModel.fetchApps()
+        viewModel = AppViewModel(mockRepository)
         advanceUntilIdle()
 
         // Then
         coVerify { mockRepository.getApps() }
+    }
+
+    @Test
+    fun `manual fetchApps call should work correctly`() = runTest {
+        // Given
+        val apps = listOf(App(id = "1", name = "Netflix", imageUrl = "netflix.jpg"))
+        coEvery { mockRepository.getApps() } returns apps
+
+        viewModel = AppViewModel(mockRepository)
+        advanceUntilIdle()
+
+        // When - Call fetchApps manually
+        viewModel.fetchApps()
+        advanceUntilIdle()
+
+        // Then
+        val finalState = viewModel.state.value
+        assertEquals(apps, finalState.apps)
+        assertFalse(finalState.isLoading)
+        assertNull(finalState.error)
+        
+        // Should have called getApps twice (once in init, once manually)
+        coVerify(exactly = 2) { mockRepository.getApps() }
     }
 }

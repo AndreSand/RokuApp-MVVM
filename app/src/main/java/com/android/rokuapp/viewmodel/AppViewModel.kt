@@ -15,7 +15,7 @@ data class AppState(
     val error: String? = null
 )
 
-class AppViewModel : ViewModel() {
+class AppViewModel(private val repository: Repository = Repository()) : ViewModel() {
     private val _state = MutableStateFlow(AppState())
     val state: StateFlow<AppState> = _state.asStateFlow()
 
@@ -27,7 +27,7 @@ class AppViewModel : ViewModel() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
-                val apps = Repository().getApps()
+                val apps = repository.getApps()
                 _state.value = _state.value.copy(
                     apps = apps,
                     isLoading = false
