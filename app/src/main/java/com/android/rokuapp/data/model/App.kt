@@ -5,16 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class App(
-    @SerialName("id")
     val id: String,
-    @SerialName("imageUrl")
     val imageUrl: String,
-    @SerialName("name")
     val name: String
 )
 
 @Serializable
 data class ApiResponse(
-    @SerialName("apps")
     val apps: List<App> = emptyList()
 )

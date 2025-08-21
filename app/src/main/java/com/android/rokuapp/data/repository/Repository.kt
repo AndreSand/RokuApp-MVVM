@@ -8,6 +8,11 @@ import com.android.rokuapp.data.network.RockuApi
 
 class Repository(private val api: RockuApi = ApiService.api) {
     suspend fun getApps(): List<App> {
-        return api.getApps().apps
+        return try{
+            api.getApps().apps
+        }
+        catch (e: Exception){
+            throw Exception("Failed to fetch characters ${e.message}")
+        }
     }
 }
